@@ -1,0 +1,6 @@
+{
+  "extends": "./node_modules/eslint-xbsoftware/2__single_quotes_and_spaces/.eslintrc",
+  "rules": {
+    "class-methods-use-this": 0
+  }
+}
