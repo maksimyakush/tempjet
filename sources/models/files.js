@@ -20,12 +20,8 @@ webix.proxy.mongo1 = webix.extend(
     webix.proxy.rest
 );
 
-export default new webix.DataCollection({
-    url: 'mongo1->/server/files',
-    save: '/server/files',
-    scheme: {
-        $save: (obj) => {
-            // $$('files').send();
-        }
-    }
-});
+// export default new webix.DataCollection({
+//     url: 'mongo1->/server/files',
+//     save: '/server/files',
+    
+// });

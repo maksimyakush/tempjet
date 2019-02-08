@@ -33,7 +33,9 @@ webix.proxy.mongo = webix.extend(
     webix.proxy.rest
 );
 export const contacts = new webix.DataCollection({
-    url: 'mongo->/server/contacts',
-    save: '/server/contacts'
+    url: 'mongo->/server/contacts'
 });
-export const dpContacts = webix.dp(contacts);
+
+export const addContactAndFilesAjaxRequest = data => webix.ajax().post('/server/contacts/', data);
+
+export const getContactFilesAjaxRequest = id => webix.ajax(`/server/files/${id}`);

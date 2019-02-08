@@ -10,16 +10,16 @@ export default class MyApp extends JetApp {
             version: VERSION,
             router: BUILD_AS_MODULE ? EmptyRouter : HashRouter,
             debug: !PRODUCTION,
-            start: '/top/data'
+            start: '/top/contactsDatatable'
         };
-
+        
         super({...defaults, ...config});
     }
 }
-/* disable-enable */
 
 if (!BUILD_AS_MODULE) {
     // const app = new MyApp();
-
+    
     webix.ready(() => new MyApp().render());
 }
+/* eslint-enable */

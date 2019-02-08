@@ -1,6 +1,9 @@
 import {JetView, plugins} from 'webix-jet';
-import {contacts, dpContacts} from 'models/contacts';
-import files from 'models/files';
+import {
+    addContactAndFilesAjaxRequest,
+    contacts,
+    getContactFilesAjaxRequest
+} from '../models/contacts';
 
 export default class DataView extends JetView {
     config() {
@@ -79,7 +82,18 @@ export default class DataView extends JetView {
                             view: 'button',
                             value: 'Save',
                             click: () => {
-                                contacts.add(this.$$('form').getValues());
+                                addContactAndFilesAjaxRequest(this.$$('form').getValues()).then(
+                                    (contact) => {
+                                        const {FirstName, LastName, id} = contact.json();
+                                        contacts.add({FirstName, LastName, id});
+                                        if (this.$$('files') && this.$$('files').files.count()) {
+                                            this.$$('files').files.data.each((file) => {
+                                                file.formData = {contactId: id};
+                                            });
+                                        }
+                                        this.$$('files').send();
+                                    }
+                                );
                             }
                         },
                         {
@@ -95,36 +109,32 @@ export default class DataView extends JetView {
     urlChange() {}
     init(view) {
         this.$$('datatable').sync(contacts);
-        webix.promise.all([contacts.waitData, files.waitData]).then(() => {
+        webix.promise.all([contacts.waitData]).then(() => {
             console.log(contacts.data);
-            if(contacts.count()) {
+            if (contacts.count()) {
                 this.$$('datatable').select(contacts.getFirstId());
-
             }
         });
         this.on(this.$$('datatable'), 'onAfterSelect', (id) => {
-
-            files.filter((obj) => {
-                if(obj.contactId && id) {
-
-                    return id == obj.contactId;
-                }
+            getContactFilesAjaxRequest(id).then((files) => {
+                this.$$('datatable1').clearAll();
+                const userFiles = files.json();
+                this.$$('datatable1').parse(userFiles)
             })
         });
-        this.$$('datatable1').parse(files);
-        this.on(dpContacts, 'onAfterInsert', (obj) => {
-            files.filter();
-            console.log('hello');
-            if (obj) {
-                console.log(obj.id);
-                this.$$('files').files.data.each((file) => {
-                    file.formData = {contactId: obj.id};
-                    console.log(file);
-                    files.add({contactId: obj.id, name: file.name});
-                    console.log(files.data.pull);
-                });
-            }
-        });
+        // this.on(dpContacts, 'onAfterInsert', (obj) => {
+        //     files.filter();
+        //     console.log('hello');
+        //     if (obj) {
+        //         console.log(obj.id);
+        //         this.$$('files').files.data.each((file) => {
+        //             file.formData = {contactId: obj.id};
+        //             console.log(file);
+        //             files.add({contactId: obj.id, name: file.name});
+        //             console.log(files.data.pull);
+        //         });
+        //     }
+        // });
 
         // this.on(this.$$("uploader"), "onBeforeFileAdd", obj => {
         // 	const { name, file, sizetext } = obj;
