@@ -1,5 +1,6 @@
 const express = require('express');
 const Contact = require('../models/contactModel');
+const File = require('../models/fileModel');
 
 const router = express.Router();
 const path = require('path');
@@ -10,18 +11,13 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    console.log(req.body);
     const contact = new Contact(req.body);
     contact.save((err, contact) => {
-        console.log(contact)
-        
-    })
-    const uploadPath = path.join(__dirname, '../files');
-    console.log(req.files);
-
-    let upload = req.files.upload;
-    upload.mv(path.join(uploadPath, upload.name));
-    res.send({files: 'files'});
+        res.send({
+            status: 200,
+            id: contact._id
+        });
+    });
 });
 
 module.exports = router;

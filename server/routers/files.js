@@ -10,11 +10,23 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const uploadPath = path.join(__dirname, '../files');
-    console.log(req.body)
-    let upload = req.files.upload;
-    upload.mv(path.join(uploadPath, upload.name));
-    res.send({files: 'files'});
+    const { contactId, name } = req.body
+    const uploadPath = path.join(__dirname, `../files`);
+
+    if(req.files) {
+        const {upload} = req.files;
+        upload.mv(path.join(uploadPath, upload.name));
+        console.log({contactId, name: upload.name});
+
+    }
+    const file = new File({contactId, name});
+    file.save((err, file) => {
+        console.log(file);
+        res.send({
+            status: "server",
+            id: file._id
+        });
+    });
 });
 
 module.exports = router;
